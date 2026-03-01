@@ -1,0 +1,106 @@
+INSTRUCTIONS POUR AJOUTER LA COLONNE ID_FILIERE À LA TABLE UTILISATEURS
+=================================================================
+
+Vous rencontrez l'erreur "SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_filiere' in 'field list'" car la colonne id_filiere n'existe pas dans votre table utilisateurs.
+
+Voici comment résoudre ce problème :
+
+MÉTHODE 1 : UTILISER LE SCRIPT EXISTANT
+---------------------------------------
+
+1. Ouvrez votre navigateur et accédez à l'URL suivante :
+   http://localhost/gestion_professeurs/modifier_gestion_coordinateur.php
+
+2. Ce script va automatiquement :
+   - Vérifier si la colonne id_filiere existe
+   - L'ajouter si elle n'existe pas
+   - Créer les contraintes de clé étrangère nécessaires
+   - Mettre à jour les coordinateurs existants
+
+3. Une fois le script exécuté, vous devriez voir un message de confirmation.
+
+4. Retournez à la page de gestion des coordinateurs et essayez d'ajouter un nouveau coordinateur.
+
+
+MÉTHODE 2 : EXÉCUTER LES REQUÊTES SQL MANUELLEMENT
+-------------------------------------------------
+
+Si la méthode 1 ne fonctionne pas, vous pouvez exécuter les requêtes SQL suivantes dans phpMyAdmin :
+
+1. Ouvrez phpMyAdmin (généralement à l'adresse http://localhost/phpmyadmin)
+
+2. Sélectionnez votre base de données "gestion_coordinteur"
+
+3. Cliquez sur l'onglet "SQL"
+
+4. Copiez et collez les requêtes suivantes :
+
+```sql
+-- Ajouter la colonne id_filiere si elle n'existe pas
+ALTER TABLE utilisateurs ADD COLUMN IF NOT EXISTS id_filiere INT;
+
+-- Ajouter une contrainte de clé étrangère
+ALTER TABLE utilisateurs ADD CONSTRAINT fk_utilisateur_filiere 
+FOREIGN KEY (id_filiere) REFERENCES filiere(id_filiere) ON DELETE SET NULL;
+
+-- Créer un index pour améliorer les performances
+CREATE INDEX idx_utilisateurs_id_filiere ON utilisateurs(id_filiere);
+
+-- Mettre à jour les coordinateurs existants
+UPDATE utilisateurs u
+JOIN departement d ON u.id_departement = d.id_departement
+LEFT JOIN filiere f ON d.id_departement = f.id_departement
+SET u.id_filiere = f.id_filiere
+WHERE u.type_utilisateur = 'coordinateur' 
+AND u.id_filiere IS NULL 
+AND f.id_filiere IS NOT NULL;
+```
+
+5. Cliquez sur "Exécuter"
+
+6. Retournez à la page de gestion des coordinateurs et essayez d'ajouter un nouveau coordinateur.
+
+
+MÉTHODE 3 : MODIFIER TEMPORAIREMENT LE CODE
+------------------------------------------
+
+Si les méthodes précédentes ne fonctionnent pas, vous pouvez modifier temporairement le code de gestion_coordinateur.php pour contourner le problème :
+
+1. Ouvrez le fichier gestion_coordinateur.php
+
+2. Recherchez la ligne suivante (vers la ligne 160) :
+   ```php
+   INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, type_utilisateur, id_departement, id_specialite, id_filiere)
+   VALUES (?, ?, ?, ?, 'coordinateur', ?, ?, ?)
+   ```
+
+3. Modifiez-la pour retirer la colonne id_filiere :
+   ```php
+   INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, type_utilisateur, id_departement, id_specialite)
+   VALUES (?, ?, ?, ?, 'coordinateur', ?, ?)
+   ```
+
+4. Modifiez également la ligne d'exécution (vers la ligne 163) :
+   ```php
+   $stmt->execute([$nom, $prenom, $email, $password_hash, $departement_id, $specialite_id, $filiere_id]);
+   ```
+   
+   Remplacez-la par :
+   ```php
+   $stmt->execute([$nom, $prenom, $email, $password_hash, $departement_id, $specialite_id]);
+   ```
+
+5. Enregistrez le fichier et essayez d'ajouter un nouveau coordinateur.
+
+6. Une fois que vous avez ajouté le coordinateur, n'oubliez pas d'exécuter l'une des méthodes précédentes pour ajouter correctement la colonne id_filiere à votre table.
+
+
+VÉRIFICATION
+-----------
+
+Pour vérifier que la colonne a bien été ajoutée, vous pouvez :
+
+1. Ouvrir phpMyAdmin
+2. Sélectionner votre base de données "gestion_coordinteur"
+3. Cliquer sur la table "utilisateurs"
+4. Vérifier que la colonne "id_filiere" apparaît dans la structure de la table

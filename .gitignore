@@ -1,0 +1,69 @@
+# ========================
+# Dépendances
+# ========================
+/vendor/
+/config/composer.phar
+
+# ========================
+# Fichiers de configuration sensibles
+# ========================
+/config/db_config.php
+/src/controllers/config.php
+.env
+
+# ========================
+# Fichiers de logs
+# ========================
+*.log
+/tests/
+/src/controllers/login_debug.log
+
+# ========================
+# Fichiers de debug temporaires
+# ========================
+/src/controllers/debug_*.php
+/src/controllers/check_*.php
+/src/controllers/fix_*.php
+/src/controllers/test_*.php
+/src/controllers/show_tables.php
+/src/controllers/find_references.php
+/src/controllers/replace_all.php
+/src/controllers/add_specialite_column.php
+/src/controllers/create_specialite_table.php
+/src/controllers/create_table.php
+/src/controllers/correction_id_filiere.php
+/src/controllers/verifier_colonne_id_filiere.php
+/src/controllers/update_affectations_table.php
+/src/controllers/setup_database.php
+/src/controllers/initialiser_charges_minimales.php
+/editer_affectation/
+
+# ========================
+# Fichiers exportés / uploads temporaires
+# ========================
+*.html
+*.xlsx
+*.xls
+/src/controllers/record_page_visit.php
+
+# ========================
+# Système d'exploitation
+# ========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========================
+# Éditeurs / IDE
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ========================
+# PHP
+# ========================
+*.cache
+
